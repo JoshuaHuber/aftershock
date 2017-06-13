@@ -22,7 +22,6 @@ function ConstructorUSGS() {
                 self.sortUSGSWeek(returnResponse);
             },
             error: function (returnResponse) {
-                console.log('error ', returnResponse);
             }
         });
     };
@@ -37,7 +36,6 @@ function ConstructorUSGS() {
                 }, 1000)
             },
             error: function (returnResponse) {
-                console.log('error ', returnResponse);
             }
         })
     };
@@ -49,7 +47,6 @@ function ConstructorUSGS() {
                 self.sortUSGSDay(returnResponse);
             },
             error: function (returnResponse) {
-                console.log('error ', returnResponse);
             }
         })
     };
@@ -293,7 +290,6 @@ function calltwitter(searchWord){
             getTweets(returnResponse);
         },
         error: function(returnResponse){
-            console.log('error ', returnResponse);
         }
     })
 }
