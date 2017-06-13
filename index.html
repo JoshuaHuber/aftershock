@@ -1,19 +1,20 @@
+<!DOCTYPE html>
 <html>
 <head>
+    <meta charset='utf-8' >
     <title>Aftershock</title>
-    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="css/styles.css">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.js" type="text/javascript"></script>
     <script src="js/app.js" type="text/javascript"></script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCk5upYmaha3CZhHdeWaPU5F7e23Il_lIo&libraries=places"></script>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 </head>
 <body>
-
-<div class="navbar navbar-inverse navbar-fixed-top">
+<nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container-fluid">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navBar">
@@ -25,25 +26,20 @@
         </div>
         <div class="collapse navbar-collapse" id="navBar">
             <ul class="nav navbar-nav navbar-right">
-                <li>
-                    <a href="#"><span><i class="fa fa-twitter"></i></span></a>
+                <li class='infoClick'>
+                    <a href="#"><span class="glyphicon glyphicon-info-sign"></span></a>
                 </li>
-                <li>
-                    <a href="#"><span class="glyphicon glyphicon-refresh"></span></a>
-                </li>
-                <li>
-                    <a href="#"><span class="glyphicon glyphicon-bell"></span></a>
+                <li class='twitterClick'>
+                    <a href="#"><span><i class="fa fa-twitter" id='twitterIcon'></i></span></a>
                 </li>
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-calendar"></span></a>
-                    <ul class="dropdown-menu" role="menu">
-                        <div class="btn btn-group-justified" id="dropdownList">
-                            <li><button class="btn btn-warning btn-lg btn-block" value="1" id = "1day">1 Day</button></li>
-                            <li><button class="btn btn-warning btn-lg btn-block" value="7" id = "7day">1 Week</button></li>
-                            <li><button class="btn btn-warning btn-lg btn-block" value="30" id = "30day">1 Month</button></li>
-                        </div>
-
-                    </ul>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Earthquakes<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#" class="daySelector" days="1" id = "1day">Last 24 hrs</a></li>
+                        <li><a href="#" class="daySelector" days="7" id = "7day">Last 7 days</a></li>
+                        <li><a href="#" class="daySelector month" days='30' id = "30day">Last 30 days</a></li>
+                        <li><a href="#" class="clearEQ" >Clear</a></li>
+                </ul>
                 </li>
                 <li>
                     <form class="navbar-form navbar-right" role="search">
@@ -58,26 +54,27 @@
             </ul>
         </div>
     </div>
-</div>
-
-<div class="testPanel" >
-    <div class="panel-heading glyphicon glyphicon-info-sign" id="left-side-menu"></div>
+</nav>
+<div class="infoPanel on" >
+    <div class="panel-heading " id="left-side-menu"> Information <p class="fa fa-times-circle closeInfo"></p></div>
     <div class="panel-body">
         <p>Earthquakes can be a frightening experience, especially when they happen out of the blue.</p>
         <p>Our goal here at Aftershock is to keep you and your loved ones safe and informed.</p>
         <p>We advise that you review the links below with your friends and family to prepare a safety plan in case of an emergency.</p></div>
-        <a href="https://www.youtube.com/watch?v=dJpIU1rSOFY" class="list-group-item">What Are Earthquakes?</a>
-        <a href="https://emergency.cdc.gov/preparedness/" class="list-group-item">Emergency Preparedness Information</a>
-        <a href="http://www.redcross.org/volunteer/volunteer-opportunities/disaster-volunteer" class="list-group-item">Volunteer w/ Disaster Relief</a>
-        <a href="http://www.redcross.org/get-help/disaster-relief-and-recovery/find-an-open-shelter" class="list-group-item">Red Cross Shelters</a>
-        <a href="#" class="list-group-item">About Us</a>
-    <div class="panel-footer"><em>Note: Map is currently showing the past 30 days.</em></div>
+        <a href="https://www.youtube.com/watch?v=dJpIU1rSOFY" target="_blank" class="list-group-item">What Are Earthquakes?</a>
+        <a href="https://emergency.cdc.gov/preparedness/" target="_blank" class="list-group-item">Emergency Preparedness Information</a>
+        <a href="http://www.redcross.org/volunteer/volunteer-opportunities/disaster-volunteer" target="_blank" class="list-group-item">Volunteer w/ Disaster Relief</a>
+        <a href="http://www.redcross.org/get-help/disaster-relief-and-recovery/find-an-open-shelter" target="_blank" class="list-group-item">Red Cross Shelters</a>
 </div>
 <div class="rightPanel">
-    <div class="panel-heading">Local Earthquake Tweets</div>
-    <div class="panel-body"></div>
+    <div class="panel-heading"><p class="fa fa-times-circle closeTwitter"></p> Earthquake Tweets</div>
+    <p id="tweetInfo">Click circles to view tweets about Earthquakes!</p>
+    <div class="panel-body" id="twitter"></div>
 </div>
-
-<div id='map' style="position: static"></div>
+<div id='map' class='col-xs-12'></div>
+<div id="legend">
+    <h4 class='legendTitle'></h4>
+    <p>EQ count: <span class="count"></span></p>
+</div>
 </body>
 </html>

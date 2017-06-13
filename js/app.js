@@ -1,13 +1,12 @@
 $().ready(startUSGS);
-
 var usgsData = null;
 var eqArrayWeekM4p5 = [];
 var eqArrayMonthM4p5 = [];
 var eqArrayDayM4p5 = [];
+var timeOutArray = [];
 var current_array = eqArrayMonthM4p5;
-
+var count = 0;
 function startUSGS(){
-
     usgsData = new ConstructorUSGS;
     usgsData.getUSGSWeek();
     usgsData.getUSGSMonth();
@@ -23,7 +22,6 @@ function ConstructorUSGS() {
                 self.sortUSGSWeek(returnResponse);
             },
             error: function (returnResponse) {
-                self.displayServerModal('Delete Error: ' + returnResponse.responseText, "Status Code: " + returnResponse.status);
                 console.log('error ', returnResponse);
             }
         });
@@ -34,10 +32,11 @@ function ConstructorUSGS() {
             method: 'get',
             success: function(returnResponse){
                 self.sortUSGSMonth(returnResponse);
-               // earthquake();    // -------------------- Might have to change this later, right it is set to load when the page is loaded.
+                setTimeout(function(){
+                    $('.month').trigger('click');
+                }, 1000)
             },
             error: function (returnResponse) {
-                self.displayServerModal('Delete Error: ' + returnResponse.responseText, "Status Code: " + returnResponse.status);
                 console.log('error ', returnResponse);
             }
         })
@@ -50,7 +49,6 @@ function ConstructorUSGS() {
                 self.sortUSGSDay(returnResponse);
             },
             error: function (returnResponse) {
-                self.displayServerModal('Delete Error: ' + returnResponse.responseText, "Status Code: " + returnResponse.status);
                 console.log('error ', returnResponse);
             }
         })
@@ -64,7 +62,7 @@ function ConstructorUSGS() {
             var long = returnResponse.features[i].geometry.coordinates[0];
             var lat = returnResponse.features[i].geometry.coordinates[1];
             var depth = returnResponse.features[i].geometry.coordinates[2];
-            eqArrayWeekM4p5.push({location, mag, time, lat, long, depth});
+            eqArrayWeekM4p5.push({location: location, mag: mag, time: time, lat: lat, long: long, depth: depth});
         }
     };
     this.sortUSGSMonth = function (returnResponse) {
@@ -76,10 +74,9 @@ function ConstructorUSGS() {
             var long = returnResponse.features[i].geometry.coordinates[0];
             var lat = returnResponse.features[i].geometry.coordinates[1];
             var depth = returnResponse.features[i].geometry.coordinates[2];
-            eqArrayMonthM4p5.push({location, mag, time, lat, long, depth});
+            eqArrayMonthM4p5.push({location: location, mag: mag, time: time, lat: lat, long: long, depth: depth});
         }
     };
-
     this.sortUSGSDay = function(returnResponse){
         for(var i = 0; i <   returnResponse.features.length; i++){
             var location = returnResponse.features[i].properties.place;
@@ -89,31 +86,30 @@ function ConstructorUSGS() {
             var lat = returnResponse.features[i].geometry.coordinates[1];
             var long = returnResponse.features[i].geometry.coordinates[0];
             var depth = returnResponse.features[i].geometry.coordinates[2];
-            eqArrayDayM4p5.push({location, mag, time, lat, long, depth});
+            eqArrayDayM4p5.push({location: location, mag: mag, time: time, lat: lat, long: long, depth: depth});
         }
     };
 }
-
 var map;
 var infowindow;
 var request;
 var service;
 var circleArray = [];
-
 $(document).ready(initialize);
 function initialize() {
-    mapInit();
     clickHandler();
+    mapInit();
     panelTransitions();
-    getAddress();
+    handleClose();
+    closeNav();
     $(document).off('ready', initialize);
 }
-
 function clickHandler() {
-    $('.btn').click(eqHistoryByDays);
+    $('.daySelector').click(eqHistoryByDays);
+    $('.clearEQ').click(clearCircles)
     $('#address').keypress(function(event){
         if(event.keyCode == 13){
-        getAddress();    
+        getAddress();
         event.preventDefault();
         event.stopPropagation();
         }
@@ -121,9 +117,12 @@ function clickHandler() {
     $(".glyphicon-search").click(getAddress);
 }
 function eqHistoryByDays() {
-    console.log("Working!");
-    days_clicked = $(this).val();
+    $('.collapse').collapse("hide")	;
     clearCircles();
+    var days_clicked = 0;
+    days_clicked = $(this).attr('days');
+    var title = $(this).text();
+    $('.legendTitle').text(title);
     if (days_clicked == 1) {
         current_array = eqArrayDayM4p5;
     }
@@ -133,29 +132,57 @@ function eqHistoryByDays() {
     else {
         current_array = eqArrayMonthM4p5;
     }
-    earthquake(current_array);
+    earthquake(current_array, days_clicked);
 }
 function mapInit() {
     map = new google.maps.Map(document.getElementById('map'), {
         zoom: 2,
-        mapTypeId: 'roadmap'
+        mapTypeId: 'roadmap',
+        center: {lat: 13.4443, lng: 144.7937}
     });
     $('.glyphicon-search').click(getAddress);
+    var icons = {
+       m4: {
+         name: '4.5 - 5m',
+         icon: 'assets/yellow_circle.jpg'
+       },
+       m5: {
+         name: '5 - 6m',
+         icon: 'assets/orange_circle.png'
+       },
+       m6: {
+         name: '6 - 7m',
+         icon: 'assets/red_circle.gif'
+       },
+       m7: {
+         name: '7m & higher',
+         icon: 'assets/black_circle.png'
+       }
+     };
+    var legend = document.getElementById('legend');
+    for (var key in icons) {
+        var type = icons[key];
+        var name = type.name;
+        var icon = type.icon;
+        var div = document.createElement('div');
+        div.innerHTML = '<img src="' + icon + '"> ' + name;
+        legend.appendChild(div);
+    }
+    map.controls[google.maps.ControlPosition.RIGHT_TOP].push(legend);
 }
 function getAddress() {
-    clearCircles();
     var geocoder = new google.maps.Geocoder();
     var address = $('#address').val();
     geocoder.geocode( { 'address': address}, function(results, status) {
         if (status == 'OK') {
             map.setCenter(results[0].geometry.location);
-            earthquake(current_array);
+            map.setZoom(7);
         } else {
             alert('Geocode was not successful for the following reason: ' + status);
         }
     });
 }
-function earthquake(current_array) {
+function earthquake(current_array, days_clicked) {
     var eqData = {};
     for (var i = 0 ; i < current_array.length ; i++) {
         eqData = {
@@ -165,14 +192,21 @@ function earthquake(current_array) {
             magnitude: current_array[i].mag.toString(),
             time: current_array[i].time
         };
-        setTimeout((function(eqData){
-            return function(){ 
-                combineLatLongForGoogle(eqData);
-            }
-        })(eqData), 15000 * (current_array.length - i) / current_array.length)
-//        combineLatLongForGoogle(eqData);
+        timeOutArray.push(
+            setTimeout((function(eqData){
+                return function(){
+                    combineLatLongForGoogle(eqData);
+                }
+            })(eqData), (400 * days_clicked) * (current_array.length - i) / current_array.length)
+        )
     }
 }
+function stopTimeout(){
+    timeOutArray.forEach(function(item){
+        clearTimeout(item);
+    })
+}
+
 function combineLatLongForGoogle(eqData) {
 
     var temp = {
@@ -181,17 +215,34 @@ function combineLatLongForGoogle(eqData) {
     };
     generateCircle(temp, eqData);
 }
-
 function generateCircle(temp, eqData) {
+    var eqDataMagStringToNumber = parseInt(eqData.magnitude);
+    var tempColor = null;
+    var tempOpacity = null;
+    count ++;
+    $('.count').text(count);
+    if (eqData.magnitude >= 7){
+        tempColor = '#FFFFF';
+        tempOpacity = 1;
+    } else if(eqData.magnitude >= 6){
+        tempColor = '#FF0000';
+        tempOpacity = 1;
+    } else if (eqData.magnitude < 6 && eqData.magnitude >= 5){
+        tempColor = '#ff6201';
+        tempOpacity = .65;
+    } else{
+        tempColor = '#fffa01';
+        tempOpacity = .5;
+    }
     circle = new google.maps.Circle({
-        strokeColor: '#FF0000',
-        strokeOpacity: 0.35,
-        strokeWeight: 1,
-        fillColor: '#FF0000',
-        fillOpacity: 0.45,
+        strokeColor: tempColor,
+        strokeOpacity: 0.5,
+        strokeWeight: .5,
+        fillColor: tempColor,
+        fillOpacity: tempOpacity,
         center: temp,
         map: map,
-        radius: (eqData.magnitude * 25000),
+        radius: ((eqData.magnitude * eqData.magnitude) * 15000),
         data: {
             magnitude: eqData.magnitude,
             location: eqData.location,
@@ -208,8 +259,12 @@ function generateCircle(temp, eqData) {
     createClickHandler(circle, eqData);
     circleArray.push(circle);
 }
-
 function clearCircles() {
+    stopTimeout();
+    count = 0;
+    $('.count').text(count);
+    $('.legendTitle').text('Choose Date');
+
     for (var i = 0; i < circleArray.length; i++){
         circleArray[i].setMap(null);
     }
@@ -232,7 +287,7 @@ function calltwitter(searchWord){
             search_term: 'earthquake ' + searchWord
         },
         dataType: 'json',
-        url: 'http://s-apis.learningfuze.com/hackathon/twitter/index.php?',
+        url: 'https://s-apis.learningfuze.com/hackathon/twitter/index.php?',
         method: 'post',
         success: function (returnResponse) {
             getTweets(returnResponse);
@@ -247,29 +302,53 @@ function getTweets(returnResponse) {
         var $screenName = returnResponse.tweets.statuses[i].user.screen_name;
         var $hello = returnResponse.tweets.statuses[i].text;
         var $row = $('<div>').addClass('row');
-        var $imgContainer = $('<div>').addClass('col-xs-2 imgLogo');
+        var $imgContainer = $('<div>').addClass('imgLogo');
         var $imgDiv = $('<div>').addClass('imgtweet');
         var $imgLogo = $('<img>').addClass('imgSource').attr('src', 'css/twitterlogo.png');
-        var $twitterFeed = $('<div>').addClass('col-xs-10 twitterFeed');
+        var $twitterFeed = $('<div>').addClass('twitterFeed');
         $($imgDiv).append($imgLogo);
         $($imgContainer).append($imgDiv);
         $($twitterFeed).append($screenName, $hello);
         $($row).append($imgContainer, $twitterFeed);
-        $('#twitter').append($row);
+        $('#twitter').prepend($row);
     }
-}
-//------------------------- Twitter Ends ---------------------------------
+    $('#twitter').prepend('<hr>');
 
-function panelTransitions() {
-    $('.fa-twitter').on('click', function () {
+}
+//-------------------------collapse---------------------------------------
+function handleClose(){
+    $('.closeInfo').on('click', function () {
+        $('.infoPanel').toggleClass('on');
+    });
+    $('.closeTwitter').on('click', function () {
         $('.rightPanel').toggleClass('on');
     });
-    $('.glyphicon-info-sign').on('click', function () {
-        $('.testPanel').toggleClass('on');
+}
+//------------------------- Twitter Ends ---------------------------------
+function panelTransitions() {
+    $('.twitterClick').on('click', function () {
+        $('.rightPanel').toggleClass('on');
+        $('.collapse').collapse("hide")	;
+    });
+    $('.infoClick').on('click', function () {
+        $('.infoPanel').toggleClass('on');
+        $('.collapse').collapse("hide")	;
     });
 }
-
-// ---------- Reset ---------------
 function reset(){
     current_array = [];
 }
+//------------------------- closeNav ---------------------------------
+function closeNav(){
+    $(document).click(function (event) {
+        var clickover = $(event.target);
+        var hamburger = $('.navbar-toggle');
+        var navBarwindow = $('.navbar-collapse');
+        var opened = navBarwindow.hasClass('in');
+        var ul = $('.scroll-nav');
+        if (opened === true && !clickover.hasClass("navbar-form") && !clickover.hasClass("in") && !clickover.hasClass("form-control")) {
+            $(hamburger).click();
+        }
+    });
+}
+//------------------------- closeNav Ends ---------------------------------
