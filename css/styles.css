@@ -1,13 +1,39 @@
 html, body {
 	height: 100vh;
+	width: 100vw;
 	margin: 0;
 	padding: 0;
 	overflow: hidden;
 }
+/*___________________start map______________________*/
 #map {
 	height: 100%;
-	position: static !important;
+	width: 100%;
 }
+#legend {
+	font-family: Arial, sans-serif;
+	background: #fff;
+	padding: 10px;
+	margin: 10px;
+	margin-top: 60px;
+	border: 1px solid #000;
+}
+#legend h3 {
+	margin-top: 0;
+	text-align: center;
+}
+#legend img {
+	vertical-align: middle;
+	margin: 2px;
+	opacity: .8;
+	height: 25px;
+}
+#legend p {
+	font-size: 12px;
+	text-align: center;
+}
+/*___________________end map______________________*/
+
 @font-face {
 	font-family: earthquakefont;
 	src: url(earthquake.ttf);
@@ -17,25 +43,39 @@ html, body {
 	margin-bottom: 0;
 }
 .navbar-brand {
-	font-size: 3.5vmin;
+	font-size: 27px;
 	font-family: earthquakefont;
 }
-body{
-	background-color: lavender;
+.navSlogen {
+	font-size: 10px;
+	font-family: Open Sans, serif;
+	padding-left: 3%;
 }
-
+.navbar {
+	width: 100%;
+}
+.input-group{
+	width: 92%;
+}
 .glyphicon {
-	font-size: 2vmin;
+	font-size: 15px;
+}
+.daySelector {
+	font-size: 100%;
+}
+.dropdown-menu>li>a {
+	color: #9d9d9d;
+}
+.dropdown-menu {
+	max-width: 70px;
 }
 
-.fa-twitter {
-	font-size: 2.5vmin !important;
+#twitterIcon {
+	font-size: 16px;
 }
-
 #dropdownList {
 	width: 100%
 }
-
 .dropdown-menu {
 	background-color: black;
 	opacity: 0.8;
@@ -43,61 +83,130 @@ body{
 .marker {
 	top: 7px;
 }
-/*panel toggle*/
-.testPanel {
+.infoPanel {
+	-webkit-position: absolute;
+	-moz-position: absolute;
+	-ms-position: absolute;
+	-o-position: absolute;
 	position: absolute;
-	width: 30vh;
+	width: 250px;
+	height: 70vh;
 	background-color: #dddddd;
-	height: 50vh;
-	transform: translateX(0px);
+	display: initial;
 	transition: all .2s;
 	z-index: 1;
 	top: 21%;
-	opacity: .8;
-
+	opacity: .9;
 }
-.testPanel.on {
-	transform: translateX(-30vh);
+.infoPanel.on {
+	display: none;
 }
 .rightPanel {
 	right: 0;
+	-webkit-position: absolute;
+	-moz-position: absolute;
+	-ms-position: absolute;
+	-o-position: absolute;
 	position: absolute;
 	top: 21%;
-	width: 35vh;
+	width: 250px;
 	background-color: #dddddd;
-	height: 60vh;
-	transform: translateX(500px);
+	height: 70vh;
+	display: none;
 	transition: all .3s;
 	z-index: 2;
 	opacity: .9;
 	overflow: hidden;
 	overflow-y: auto;
 }
-
 .rightPanel.on {
-	transform: translateX(0);
+	display: initial;
 }
-
 .panel-heading {
 	background-color: #0084b4;
 	color: white;
 	text-align: center;
-	font-size: 2.5vmin;
+	font-size: 20px;
 	width: 100%;
 }
-
+.twitterFeed {
+	padding-left: 8%;
+	font-size: 15px;
+}
 .imgtweet {
 	width: 50px;
 	height: 50px;
 	line-height: 1em;
 }
-
+#tweetInfo {
+	text-align: center;
+	font-size: 1.2em;
+}
+hr {
+	margin: 0px;
+	margin-bottom: 10px;
+	border-top: 1px solid black;
+}
+.imgLogo {
+	float: left;
+	padding: 3px;
+}
 .row {
 	margin-left: -15px;
 	margin-bottom: 2vmin;
+	height: 10%;
 }
-
 #left-side-menu {
 	width: 100%;
-	text-align: left;
+	text-align: center;
+	font-size: 20px;
+}
+.panel-body {
+	font-size: 13px;
+	padding-top: 0px;
+}
+.panel-footer {
+	font-size: 12px;
+}
+.list-group-item{
+	font-size: 12px;
+}
+.navbar .navbar-collapse {
+  text-align: center;
+}
+.dropdown-menu{
+	min-width: 119px;
+}
+.dropdown-menu li {
+	text-align: center;
+}
+@media screen and (max-width: 768px) {
+	.input-group{
+		width: 100%;
+	}
+	.navbar {
+		z-index: 10;
+	}
+	.dropdown-menu {
+		margin: 0 auto;
+		min-width: 100%;
+	}
+}
+@media screen and (max-width: 400px) {
+	.navbar-brand{
+		font-size: 15px;
+	}
+	..navSlogen{
+		font-size: 8px;
+	}
+	.input-group{
+		width: 100%;
+	}
+	#legend {
+		padding: 5px;
+		margin: 0px;
+	}
+	#legend img {
+		height: 15px;
+	}
 }
