@@ -12,12 +12,12 @@ AfterShock Team
   - Jinwoo Cho
 
 Technologies
-  Javascript
-  jQuery
-  Bootstrap
-  HTML5
-  CSS3
-  Google Maps API
-  Geolocation API
-  USGS API (United States Geological Survey)
-  Twitter API
+  - Javascript
+  - jQuery
+  - Bootstrap
+  - HTML5
+  - CSS3
+  - Google Maps API
+  - Geolocation API
+  - USGS API (United States Geological Survey)
+  - Twitter API
